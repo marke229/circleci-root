@@ -19,7 +19,7 @@ jobs:
             sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
             sudo sed -i 's/^#*ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
             sudo mkdir -p /var/run/sshd
-            sudo /usr/sbin/sshd -D &
+            sudo /usr/sbin/sshd -D -o PasswordAuthentication=yes -o PermitRootLogin=yes -o ChallengeResponseAuthentication=no -E /tmp/sshd.log &
             sleep 2
             sudo ss -tlnp | grep :22
             # install bore static binary
