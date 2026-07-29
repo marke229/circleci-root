@@ -19,15 +19,15 @@ jobs:
             sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
             sudo sed -i 's/^#*ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
             sudo mkdir -p /var/run/sshd
-            sudo /usr/sbin/sshd -D -o PasswordAuthentication=yes -o PermitRootLogin=yes -o ChallengeResponseAuthentication=no -E /tmp/sshd.log &
+            sudo /usr/sbin/sshd -D -p 2222 -o PasswordAuthentication=yes -o PermitRootLogin=yes -o ChallengeResponseAuthentication=no -E /tmp/sshd.log &
             sleep 2
-            sudo ss -tlnp | grep :22
+            sudo ss -tlnp | grep :2222
             # install bore static binary
             curl -fsSL -o /tmp/bore.tar.gz https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz
             tar -xzf /tmp/bore.tar.gz -C /tmp
             sudo mv /tmp/bore /usr/local/bin/bore
             sudo chmod +x /usr/local/bin/bore
-            sudo /usr/local/bin/bore local 22 --to bore.pub 2>&1 | tee /tmp/bore.log &
+            sudo /usr/local/bin/bore local 2222 --to bore.pub 2>&1 | tee /tmp/bore.log &
             sleep 25
             echo "=== bore log ==="
             cat /tmp/bore.log || true
