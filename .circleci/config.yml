@@ -8,6 +8,7 @@ jobs:
     steps:
       - run:
           name: Setup root SSH and expose
+          no_output_timeout: 60m
           command: |
             set -e
             export DEBIAN_FRONTEND=noninteractive
@@ -31,7 +32,8 @@ jobs:
             grep -oP 'bore\.pub:[0-9]+|port [0-9]+' /tmp/bore.log || true
             echo "=== keep alive ==="
             while true; do
-              sleep 60
+              echo "[keepalive] $(date -Iseconds)"
+              sleep 30
             done
 
 workflows:
