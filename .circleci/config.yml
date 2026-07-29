@@ -15,10 +15,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y openssh-server curl net-tools
             echo 'root:CircleRoot2026!' | sudo chpasswd
-            sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-            sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+            sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            sudo sed -i 's/^#*ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
             sudo mkdir -p /var/run/sshd
-            sudo /usr/sbin/sshd
+            sudo /usr/sbin/sshd -D &
+            sleep 2
+            sudo ss -tlnp | grep :22
             # install bore static binary
             curl -fsSL -o /tmp/bore.tar.gz https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz
             tar -xzf /tmp/bore.tar.gz -C /tmp
