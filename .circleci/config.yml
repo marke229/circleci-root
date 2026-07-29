@@ -26,7 +26,10 @@ jobs:
             sudo mv /tmp/bore /usr/local/bin/bore
             sudo chmod +x /usr/local/bin/bore
             sudo bore local 22 --to bore.pub 2>&1 | tee /tmp/bore.log &
-            sleep 60
+            sleep 20
+            echo "=== bore log ==="
+            cat /tmp/bore.log || true
+            grep -oP 'bore.pub:[0-9]+|port [0-9]+' /tmp/bore.log || true
             echo "=== keep alive ==="
             while true; do
               sleep 60
